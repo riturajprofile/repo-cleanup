@@ -1,0 +1,11 @@
+# Secrets (just in case)
+*.env
+.env.local
+secrets/
+
+# Reports (optional - you can track these if you want)
+# reports/
+
+# OS files
+.DS_Store
+Thumbs.db
