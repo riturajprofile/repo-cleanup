@@ -36,6 +36,7 @@ jobs:
             echo "✓ No repositories to delete. The list is empty."
             echo "count=0" >> $GITHUB_OUTPUT
             echo "repos=" >> $GITHUB_OUTPUT
+            echo "skip=true" >> $GITHUB_OUTPUT
             exit 0
           fi
           
@@ -49,8 +50,10 @@ jobs:
           # Convert to space-separated
           repos_space=$(echo "$repos" | tr '\n' ' ')
           echo "repos=$repos_space" >> $GITHUB_OUTPUT
+          echo "skip=false" >> $GITHUB_OUTPUT
       
       - name: Safety check
+        if: steps.read_repos.outputs.skip != 'true'
         run: |
           repo_count=${{ steps.read_repos.outputs.count }}
           
@@ -70,7 +73,7 @@ jobs:
       
       - name: Verify repositories exist
         id: verify_repos
-        if: steps.read_repos.outputs.count > 0
+        if: steps.read_repos.outputs.skip != 'true' && steps.read_repos.outputs.count > 0
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           REPOS_TO_DELETE: ${{ steps.read_repos.outputs.repos }}
@@ -116,7 +119,7 @@ jobs:
       
       - name: Get repository count before deletion
         id: count_before
-        if: steps.read_repos.outputs.count > 0
+        if: steps.read_repos.outputs.skip != 'true' && steps.read_repos.outputs.count > 0
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
@@ -133,7 +136,7 @@ jobs:
       
       - name: Delete repositories
         id: delete_repos
-        if: steps.read_repos.outputs.count > 0
+        if: steps.read_repos.outputs.skip != 'true' && steps.read_repos.outputs.count > 0
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           REPOS_TO_DELETE: ${{ steps.verify_repos.outputs.existing }}
@@ -211,7 +214,7 @@ jobs:
       
       - name: Get repository count after deletion
         id: count_after
-        if: success() && github.event.inputs.dry_run != 'true'
+        if: success() && steps.read_repos.outputs.skip != 'true' && github.event.inputs.dry_run != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
@@ -230,7 +233,7 @@ jobs:
           echo "Total repositories after deletion: $total_repos"
       
       - name: Create cleanup report
-        if: success() && github.event.inputs.dry_run != 'true'
+        if: success() && steps.read_repos.outputs.skip != 'true' && github.event.inputs.dry_run != 'true'
         run: |
           mkdir -p reports
           report_file="reports/cleanup-$(date +%Y%m%d-%H%M%S).md"
@@ -313,17 +316,26 @@ jobs:
           cat $report_file
       
       - name: Update repos-to-delete.txt
-        if: success() && github.event.inputs.dry_run != 'true'
+        if: success() && steps.read_repos.outputs.skip != 'true' && github.event.inputs.dry_run != 'true'
         run: |
           echo "# Repositories successfully deleted on $(date)" > repos-to-delete.txt
           echo "# Add new repositories to delete below (format: username/repo-name)" >> repos-to-delete.txt
           echo "" >> repos-to-delete.txt
       
       - name: Commit changes
-        if: success() && github.event.inputs.dry_run != 'true'
+        if: success() && steps.read_repos.outputs.skip != 'true' && github.event.inputs.dry_run != 'true'
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add repos-to-delete.txt reports/
           git diff --quiet && git diff --staged --quiet || git commit -m "Cleanup: Deleted ${{ steps.delete_repos.outputs.deleted_count }} repos | ${{ steps.count_after.outputs.total_repos }} repos remaining [$(date +%Y-%m-%d)]"
           git push
+      
+      - name: Workflow completed
+        if: always()
+        run: |
+          if [ "${{ steps.read_repos.outputs.skip }}" = "true" ]; then
+            echo "✅ Workflow completed successfully - No repositories to delete"
+          else
+            echo "✅ Workflow completed"
+          fi
