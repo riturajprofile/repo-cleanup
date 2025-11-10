@@ -1,5 +1,7 @@
 # Lines starting with # are comments
 # Format: username/repository-name
 
-your-username/old-project-1
-riturajprofile/
+riturajprofile/Q8
+riturajprofile/tds-api
+riturajprofile/analyze
+riturajprofile/sharevolume

@@ -4,6 +4,8 @@
 [![GitHub Actions](https://img.shields.io/badge/GitHub-Actions-blue.svg)](https://github.com/features/actions)
 [![Portfolio](https://img.shields.io/badge/Portfolio-riturajprofile.me-brightgreen)](https://www.riturajprofile.me)
 
+<img src="https://github.com/riturajprofile.png" width="180" height="150" alt="Rituraj">
+
 > Automatically delete specified GitHub repositories using GitHub Actions. Keep your GitHub account clean and organized with scheduled cleanup automation.
 
 **Created by [Rituraj](https://www.riturajprofile.me)**

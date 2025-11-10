@@ -1,10 +1,18 @@
-name: Repository Cleanup
+name: Safe Repository Cleanup
 
 on:
   schedule:
-    # Runs every Sunday at 2 AM UTC
     - cron: '0 2 1 * 0'
-  workflow_dispatch: # Allows manual triggering
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (test without deleting)'
+        required: false
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
 
 jobs:
   cleanup:
@@ -22,20 +30,101 @@ jobs:
             exit 1
           fi
           
-          # Read file and skip empty lines and comments
-          repos=$(grep -v '^#' repos-to-delete.txt | grep -v '^$' | tr '\n' ' ')
-          echo "repos=$repos" >> $GITHUB_OUTPUT
-          echo "Repositories to delete: $repos"
+          repos=$(grep -v '^#' repos-to-delete.txt | grep -v '^$')
+          echo "Repository list:"
+          echo "$repos"
+          
+          # Count repos
+          count=$(echo "$repos" | wc -l)
+          echo "count=$count" >> $GITHUB_OUTPUT
+          
+          # Convert to space-separated
+          repos_space=$(echo "$repos" | tr '\n' ' ')
+          echo "repos=$repos_space" >> $GITHUB_OUTPUT
       
-      - name: Delete repositories
+      - name: Safety check
+        run: |
+          repo_count=${{ steps.read_repos.outputs.count }}
+          
+          if [ $repo_count -gt 10 ]; then
+            echo "⚠️  WARNING: Attempting to delete $repo_count repositories"
+            echo "This exceeds the safety limit of 10 repos per run"
+            echo "Please review the list and run again with fewer repositories"
+            exit 1
+          fi
+          
+          echo "✓ Safety check passed: $repo_count repositories to process"
+      
+      - name: Verify repositories exist
+        id: verify_repos
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           REPOS_TO_DELETE: ${{ steps.read_repos.outputs.repos }}
         run: |
+          echo "Verifying repositories..."
+          existing_repos=""
+          missing_repos=""
+          
           for repo in $REPOS_TO_DELETE; do
-            echo "Attempting to delete: $repo"
+            response=$(curl -s -o /dev/null -w "%{http_code}" \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/$repo")
             
-            # Delete the repository using GitHub API
+            if [ "$response" -eq 200 ]; then
+              echo "✓ Found: $repo"
+              existing_repos="$existing_repos $repo"
+            else
+              echo "⚠ Not found or inaccessible: $repo (HTTP $response)"
+              missing_repos="$missing_repos $repo"
+            fi
+          done
+          
+          # Output results
+          echo "existing=$existing_repos" >> $GITHUB_OUTPUT
+          echo "missing=$missing_repos" >> $GITHUB_OUTPUT
+          
+          # Summary
+          existing_count=$(echo $existing_repos | wc -w)
+          missing_count=$(echo $missing_repos | wc -w)
+          
+          echo ""
+          echo "Summary:"
+          echo "  - Repositories found: $existing_count"
+          echo "  - Repositories missing: $missing_count"
+          
+          if [ -n "$missing_repos" ]; then
+            echo ""
+            echo "⚠️ The following repositories are already deleted or inaccessible:"
+            echo "$missing_repos" | tr ' ' '\n' | sed 's/^/  - /'
+          fi
+      
+      - name: Delete repositories
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+          REPOS_TO_DELETE: ${{ steps.verify_repos.outputs.existing }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+        run: |
+          if [ -z "$REPOS_TO_DELETE" ]; then
+            echo "⚠️ No valid repositories to delete. All repositories are already deleted or inaccessible."
+            exit 0
+          fi
+          
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "🔍 DRY RUN MODE - No repositories will be deleted"
+            echo ""
+          fi
+          
+          for repo in $REPOS_TO_DELETE; do
+            echo "Processing: $repo"
+            
+            if [ "$DRY_RUN" = "true" ]; then
+              echo "  [DRY RUN] Would delete: $repo"
+              continue
+            fi
+            
+            # Delete the repository
             response=$(curl -X DELETE \
               -H "Accept: application/vnd.github+json" \
               -H "Authorization: Bearer $GITHUB_TOKEN" \
@@ -46,26 +135,49 @@ jobs:
               "https://api.github.com/repos/$repo")
             
             if [ "$response" -eq 204 ]; then
-              echo "✓ Successfully deleted: $repo"
+              echo "  ✓ Successfully deleted: $repo"
             elif [ "$response" -eq 404 ]; then
-              echo "⚠ Repository not found: $repo"
+              echo "  ⚠ Repository not found (may have been deleted between verification and deletion): $repo"
+            elif [ "$response" -eq 403 ]; then
+              echo "  ✗ Permission denied: $repo"
             else
-              echo "✗ Failed to delete $repo (HTTP $response)"
+              echo "  ✗ Failed to delete $repo (HTTP $response)"
             fi
+            
+            # Rate limiting: wait 1 second between deletions
+            sleep 1
           done
       
-      - name: Update repos-to-delete.txt
-        if: success()
+      - name: Create cleanup report
+        if: success() && github.event.inputs.dry_run != 'true'
         run: |
-          # Clear the file after successful deletion
+          mkdir -p reports
+          report_file="reports/cleanup-$(date +%Y%m%d-%H%M%S).md"
+          
+          echo "# Repository Cleanup Report" > $report_file
+          echo "" >> $report_file
+          echo "**Date**: $(date)" >> $report_file
+          echo "**Repositories processed**: ${{ steps.read_repos.outputs.count }}" >> $report_file
+          echo "" >> $report_file
+          echo "## Repositories" >> $report_file
+          echo '```' >> $report_file
+          echo "${{ steps.read_repos.outputs.repos }}" | tr ' ' '\n' >> $report_file
+          echo '```' >> $report_file
+          
+          echo "Report created: $report_file"
+      
+      - name: Update repos-to-delete.txt
+        if: success() && github.event.inputs.dry_run != 'true'
+        run: |
           echo "# Repositories successfully deleted on $(date)" > repos-to-delete.txt
           echo "# Add new repositories to delete below (format: username/repo-name)" >> repos-to-delete.txt
+          echo "" >> repos-to-delete.txt
       
       - name: Commit changes
-        if: success()
+        if: success() && github.event.inputs.dry_run != 'true'
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add repos-to-delete.txt
-          git diff --quiet && git diff --staged --quiet || git commit -m "Clear repos-to-delete.txt after cleanup"
+          git add repos-to-delete.txt reports/
+          git diff --quiet && git diff --staged --quiet || git commit -m "Cleanup completed: $(date +%Y-%m-%d)"
           git push
