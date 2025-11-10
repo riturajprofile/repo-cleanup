@@ -4,8 +4,7 @@
 [![GitHub Actions](https://img.shields.io/badge/GitHub-Actions-blue.svg)](https://github.com/features/actions)
 [![Portfolio](https://img.shields.io/badge/Portfolio-riturajprofile.me-brightgreen)](https://www.riturajprofile.me)
 
-<img src="https://github.com/riturajprofile.png" width="150" height="150" alt="Rituraj">
-<img src="https://imgshare.cc/yjboo6hu" width="150" height="150" alt="Rituraj">
+<img src="https://github.com/riturajprofile.png" width="150" height="150" alt="Rituraj"><img src="https://beeimg.com/images/s92874093423.png" width="150" height="150" alt="Rituraj">
 
 
 > **Two powerful ways to manage your GitHub repositories:**
