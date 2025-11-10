@@ -5,7 +5,7 @@
 [![Portfolio](https://img.shields.io/badge/Portfolio-riturajprofile.me-brightgreen)](https://www.riturajprofile.me)
 
 <img src="https://github.com/riturajprofile.png" width="150" height="150" alt="Rituraj">
-<img src="https://beeimg.com/images/s92874093423.png" width="500" height="500" alt="Rituraj">
+
 
 
 > **Two powerful ways to manage your GitHub repositories:**
@@ -29,7 +29,7 @@
 - 📝 **Activity Log** - Track every action in real-time
 - 🛡️ **Safety Confirmations** - Type "DELETE" to confirm actions
 - 📈 **Visual Reports** - Beautiful charts and statistics
-
+<img src="https://beeimg.com/images/s92874093423.png" width="700" height="700" alt="Rituraj">
 [**→ Jump to Version Repoma Guide**](#-version-repoma-web-interface)
 
 ### 🤖 GitHub Actions (Automation)
