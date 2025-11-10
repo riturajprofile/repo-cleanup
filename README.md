@@ -47,7 +47,7 @@
 
 ### ✨ Features
 
-- **🎨 Modern UI/UX** - Claude AI-inspired design with winter cream color palette
+- **🎨 Modern UI/UX** -design with winter cream color palette
 - **👤 GitHub Profile Integration** - Displays your avatar, name, and stats
 - **📊 Comprehensive Statistics**
   - Total, Public, Private repositories
