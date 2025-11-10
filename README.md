@@ -1,4 +1,4 @@
-# 🧹 GitHub Repository Cleanup Automation
+# 🧹 GitHub Repository Cleanup & Version Repoma
 
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
 [![GitHub Actions](https://img.shields.io/badge/GitHub-Actions-blue.svg)](https://github.com/features/actions)
@@ -6,11 +6,194 @@
 
 <img src="https://github.com/riturajprofile.png" width="150" height="150" alt="Rituraj">
 
-> Automatically delete specified GitHub repositories using GitHub Actions. Keep your GitHub account clean and organized with scheduled cleanup automation.
+> **Two powerful ways to manage your GitHub repositories:**
+> 1. **Version Repoma** - Professional web-based repository manager with real-time interface
+> 2. **GitHub Actions** - Automated scheduled cleanup with visual reports
 
 **Created by [Rituraj](https://www.riturajprofile.me)**
 
-## ⚠️ Important Warning
+---
+
+## 🎯 Choose Your Tool
+
+### 🌐 Version Repoma (Web Interface)
+**Perfect for: Interactive, real-time repository management**
+
+- 🖥️ **Professional Dashboard** - Modern, intuitive web interface
+- 👁️ **Real-time Statistics** - Live repository counts, size, and metadata
+- 🔍 **Smart Search & Filter** - Find repositories instantly
+- 📊 **Detailed Info Display** - View size, creation date, forks, stars
+- ⚡ **Bulk Operations** - Select and delete multiple repos at once
+- 📝 **Activity Log** - Track every action in real-time
+- 🛡️ **Safety Confirmations** - Type "DELETE" to confirm actions
+- 📈 **Visual Reports** - Beautiful charts and statistics
+
+[**→ Jump to Version Repoma Guide**](#-version-repoma-web-interface)
+
+### 🤖 GitHub Actions (Automation)
+**Perfect for: Scheduled, hands-off cleanup**
+
+- 📅 **Automated Scheduling** - Weekly, daily, or custom schedules
+- 🔄 **Set & Forget** - Runs without manual intervention
+- 📊 **Automated Reports** - Generated after each cleanup
+- 🛡️ **Safety Limits** - Maximum repositories per run
+- 🧪 **Dry-Run Mode** - Test before deleting
+
+[**→ Jump to GitHub Actions Guide**](#-github-actions-automation)
+
+---
+
+## 🌐 Version Repoma (Web Interface)
+
+### ✨ Features
+
+- **🎨 Modern UI/UX** - Claude AI-inspired design with winter cream color palette
+- **👤 GitHub Profile Integration** - Displays your avatar, name, and stats
+- **📊 Comprehensive Statistics**
+  - Total, Public, Private repositories
+  - Forks vs Original repos
+  - Archived and Starred counts
+  - Selected repositories counter
+- **🔍 Advanced Search** - Real-time filtering by name/description
+- **📦 Repository Cards** - Compact view with:
+  - Repository name and description
+  - Stars, forks, visibility status
+  - Size in MB/KB
+  - Creation date (IST timezone)
+  - Last update date
+- **⚡ Bulk Actions**
+  - Select All / Deselect All
+  - Multi-repository deletion
+  - Sequential API calls with rate limiting
+- **🗑️ Smart Deletion**
+  - Detailed confirmation modal
+  - Shows what will be deleted
+  - Requires "DELETE" confirmation
+- **📝 Activity Log** - Real-time operation tracking
+- **📊 Cleanup Report** - Live statistics dashboard
+- **🎯 IST Timezone** - All timestamps in Indian Standard Time
+
+### 🚀 Quick Start (Version Repoma)
+
+#### 1️⃣ Open the Web Interface
+
+Simply open `index.html` in your browser or host it on GitHub Pages:
+
+```bash
+# Local usage
+open index.html
+
+# Or deploy to GitHub Pages
+# Settings → Pages → Deploy from branch (main)
+```
+
+#### 2️⃣ Generate GitHub Token
+
+1. Click the **"Generate token"** link in the sidebar
+2. Or visit: [GitHub Settings → Tokens](https://github.com/settings/tokens/new?scopes=repo,delete_repo&description=Version%20Repoma)
+3. Required scopes:
+   - ✅ `repo` - Full repository access
+   - ✅ `delete_repo` - Delete repositories
+4. Copy the generated token
+
+#### 3️⃣ Enter Credentials
+
+1. Input your **GitHub Username**
+2. Paste your **Access Token**
+3. Click **"Load Repositories"**
+
+#### 4️⃣ Manage Repositories
+
+**Search & Filter:**
+- Use the search box to filter by name/description
+- View detailed repository statistics
+
+**Select Repositories:**
+- Click checkboxes to select individual repos
+- Or use "Select All" for bulk selection
+
+**Delete Repositories:**
+1. Click **"Delete Selected"** button
+2. Review the confirmation modal showing:
+   - Repository names
+   - Size in MB/KB
+   - Creation dates
+3. Type **"DELETE"** to confirm
+4. Monitor progress in Activity Log
+
+#### 5️⃣ Track Progress
+
+- **Activity Log** - Real-time deletion status
+- **Cleanup Report** - Before/After statistics with percentages
+- **Statistics Update** - Live counter updates
+
+### 📖 How to Use Version Repoma
+
+**Step 1: Generate GitHub Token**
+- Click the "Generate token" link in the sidebar
+- Create a Personal Access Token with `repo` and `delete_repo` permissions
+
+**Step 2: Enter Credentials**
+- Input your GitHub username
+- Paste the generated token in the sidebar form
+
+**Step 3: Load Repositories**
+- Click "Load Repositories" button
+- Fetch all your GitHub repositories with detailed statistics
+
+**Step 4: Search & Filter**
+- Use the search box to filter repositories by name, description, or metadata
+- View repository stats including size and creation date
+
+**Step 5: Select & Delete**
+- Select individual repositories or use "Select All" for bulk actions
+- Click delete to remove unwanted repositories
+- Requires typing "DELETE" to confirm
+
+**Step 6: Track Progress**
+- Monitor deletion progress in real-time through the activity log
+- View cleanup report in the sidebar with live statistics
+
+### 🎨 Version Repoma Interface
+
+**Layout:**
+- **Left Sidebar (380px):**
+  - App header with branding
+  - GitHub credentials form
+  - Activity log (real-time)
+  - Cleanup report (statistics)
+  - Developer information
+
+- **Main Content Area:**
+  - Welcome screen with features
+  - How-to-use guide
+  - Repository dashboard with user profile
+  - Search controls with statistics
+  - Repository grid (compact cards)
+  - Footer credits
+
+**Color Scheme:**
+- Background: `#F8FAFC` (Cream White)
+- Borders: `#D9EAFD` (Soft Blue)
+- Text: `#334155` (Dark Grey)
+- Accent: `#5B8FCC` to `#7BA5D8` (Blue Gradient)
+- Success: `#4CAF50` (Green)
+- Error: `#E57373` (Red)
+
+### 🛡️ Safety Features
+
+- **Confirmation Modal** - Visual warning with repository details
+- **Type-to-Confirm** - Must type "DELETE" exactly
+- **Individual Prompts** - Single repo deletion requires confirmation
+- **Activity Logging** - All actions tracked with timestamps
+- **Rate Limiting** - 500ms delay between deletions
+- **Real-time Feedback** - Success/error messages for each operation
+
+---
+
+## 🤖 GitHub Actions (Automation)
+
+### ⚠️ Important Warning
 
 **This action permanently deletes repositories and cannot be undone!**
 
@@ -19,7 +202,7 @@
 - Always test with dry-run mode first
 - Double-check repository names before proceeding
 
-## ✨ Features
+### ✨ Features
 
 - 🤖 **Fully Automated** - Set it and forget it with GitHub Actions
 - 📅 **Scheduled Cleanup** - Weekly, daily, or custom schedules
@@ -32,16 +215,16 @@
 - 💬 **Smart Commit Messages** - Auto-generated messages with deletion stats
 - 🔄 **Auto-Clear List** - Empties the deletion list after successful cleanup
 
-## 🚀 Quick Start
+### 🚀 Quick Start (GitHub Actions)
 
-### 1️⃣ Fork or Clone This Repository
+#### 1️⃣ Fork or Clone This Repository
 
 ```bash
 git clone https://github.com/riturajprofile/github-repo-cleanup.git
 cd github-repo-cleanup
 ```
 
-### 2️⃣ Create a Personal Access Token (PAT)
+#### 2️⃣ Create a Personal Access Token (PAT)
 
 1. Navigate to [GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)](https://github.com/settings/tokens)
 2. Click **"Generate new token (classic)"**
@@ -53,7 +236,7 @@ cd github-repo-cleanup
 6. Click **"Generate token"**
 7. **⚠️ Copy the token immediately** - you won't see it again!
 
-### 3️⃣ Add Token to Repository Secrets
+#### 3️⃣ Add Token to Repository Secrets
 
 1. Go to your repository **Settings**
 2. Navigate to **Secrets and variables → Actions**
@@ -63,7 +246,7 @@ cd github-repo-cleanup
    - **Value:** Paste your personal access token
 5. Click **"Add secret"**
 
-### 4️⃣ Configure Repositories to Delete
+#### 4️⃣ Configure Repositories to Delete
 
 Edit the `repos-to-delete.txt` file in your repository:
 
@@ -77,7 +260,7 @@ riturajprofile/test-repo-xyz
 riturajprofile/archived-assignment-2023
 ```
 
-### 5️⃣ Test with Dry Run
+#### 5️⃣ Test with Dry Run
 
 **Before deleting anything, test first!**
 
@@ -88,7 +271,7 @@ riturajprofile/archived-assignment-2023
 5. Click **"Run workflow"**
 6. Review the logs to verify everything works correctly
 
-### 6️⃣ Run Actual Cleanup
+#### 6️⃣ Run Actual Cleanup
 
 Once verified:
 - Manually trigger with dry_run set to **"false"**, or
@@ -312,7 +495,40 @@ Contributions are welcome! Here's how you can help:
 - Support for organization repositories
 - Slack/Discord webhook integration
 
-## 📝 License
+## � Version Repoma vs GitHub Actions
+
+Not sure which tool to use? Here's a quick comparison:
+
+| Feature | Version Repoma (Web) | GitHub Actions |
+|---------|---------------------|----------------|
+| **Interface** | Modern web dashboard | Command-line logs |
+| **Usage** | Interactive, manual | Automated, scheduled |
+| **Real-time Feedback** | ✅ Yes | ❌ No |
+| **Visual Statistics** | ✅ Live dashboard | ✅ Markdown reports |
+| **Search & Filter** | ✅ Yes | ❌ No |
+| **Bulk Selection** | ✅ Visual selection | ✅ Text file list |
+| **Deletion Speed** | ⚡ Immediate | ⏰ Scheduled |
+| **Repository Details** | ✅ Size, dates, stats | ❌ Basic |
+| **Activity Log** | ✅ Real-time | ✅ Workflow logs |
+| **Confirmation** | 🛡️ Type "DELETE" | 🛡️ Dry-run mode |
+| **Best For** | Quick cleanup, exploration | Recurring maintenance |
+| **Setup Time** | 🚀 < 1 minute | ⏱️ 5-10 minutes |
+| **Requires Hosting** | ❌ No (local HTML) | ✅ Yes (GitHub repo) |
+| **Token Security** | ⚠️ Manual entry | ✅ GitHub Secrets |
+
+**Use Version Repoma when:**
+- You want immediate, interactive control
+- Need to explore and filter repositories visually
+- Want detailed repository information before deleting
+- Prefer a graphical user interface
+
+**Use GitHub Actions when:**
+- You want automated, scheduled cleanup
+- Prefer hands-off maintenance
+- Need audit trails in version control
+- Want secure token storage in GitHub Secrets
+
+## �📝 License
 
 This work is licensed under a [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
 
