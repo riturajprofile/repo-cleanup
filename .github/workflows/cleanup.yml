@@ -100,7 +100,24 @@ jobs:
             echo "$missing_repos" | tr ' ' '\n' | sed 's/^/  - /'
           fi
       
+      - name: Get repository count before deletion
+        id: count_before
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          username=$(echo "${{ steps.read_repos.outputs.repos }}" | head -n 1 | cut -d'/' -f1)
+          
+          total_repos=$(curl -s \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/users/$username" | jq -r '.public_repos')
+          
+          echo "total_repos=$total_repos" >> $GITHUB_OUTPUT
+          echo "Total repositories before deletion: $total_repos"
+      
       - name: Delete repositories
+        id: delete_repos
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           REPOS_TO_DELETE: ${{ steps.verify_repos.outputs.existing }}
@@ -108,6 +125,8 @@ jobs:
         run: |
           if [ -z "$REPOS_TO_DELETE" ]; then
             echo "⚠️ No valid repositories to delete. All repositories are already deleted or inaccessible."
+            echo "deleted_count=0" >> $GITHUB_OUTPUT
+            echo "failed_count=0" >> $GITHUB_OUTPUT
             exit 0
           fi
           
@@ -115,6 +134,11 @@ jobs:
             echo "🔍 DRY RUN MODE - No repositories will be deleted"
             echo ""
           fi
+          
+          deleted_repos=""
+          failed_repos=""
+          deleted_count=0
+          failed_count=0
           
           for repo in $REPOS_TO_DELETE; do
             echo "Processing: $repo"
@@ -136,17 +160,58 @@ jobs:
             
             if [ "$response" -eq 204 ]; then
               echo "  ✓ Successfully deleted: $repo"
+              deleted_repos="$deleted_repos$repo"$'\n'
+              deleted_count=$((deleted_count + 1))
             elif [ "$response" -eq 404 ]; then
               echo "  ⚠ Repository not found (may have been deleted between verification and deletion): $repo"
+              deleted_repos="$deleted_repos$repo"$'\n'
+              deleted_count=$((deleted_count + 1))
             elif [ "$response" -eq 403 ]; then
               echo "  ✗ Permission denied: $repo"
+              failed_repos="$failed_repos$repo"$'\n'
+              failed_count=$((failed_count + 1))
             else
               echo "  ✗ Failed to delete $repo (HTTP $response)"
+              failed_repos="$failed_repos$repo"$'\n'
+              failed_count=$((failed_count + 1))
             fi
             
             # Rate limiting: wait 1 second between deletions
             sleep 1
           done
+          
+          echo "deleted_count=$deleted_count" >> $GITHUB_OUTPUT
+          echo "failed_count=$failed_count" >> $GITHUB_OUTPUT
+          {
+            echo 'deleted_repos<<EOF'
+            echo "$deleted_repos"
+            echo EOF
+          } >> $GITHUB_OUTPUT
+          {
+            echo 'failed_repos<<EOF'
+            echo "$failed_repos"
+            echo EOF
+          } >> $GITHUB_OUTPUT
+      
+      - name: Get repository count after deletion
+        id: count_after
+        if: success() && github.event.inputs.dry_run != 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          username=$(echo "${{ steps.read_repos.outputs.repos }}" | head -n 1 | cut -d'/' -f1)
+          
+          # Wait a moment for GitHub to update
+          sleep 3
+          
+          total_repos=$(curl -s \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/users/$username" | jq -r '.public_repos')
+          
+          echo "total_repos=$total_repos" >> $GITHUB_OUTPUT
+          echo "Total repositories after deletion: $total_repos"
       
       - name: Create cleanup report
         if: success() && github.event.inputs.dry_run != 'true'
@@ -154,17 +219,82 @@ jobs:
           mkdir -p reports
           report_file="reports/cleanup-$(date +%Y%m%d-%H%M%S).md"
           
-          echo "# Repository Cleanup Report" > $report_file
+          before_count="${{ steps.count_before.outputs.total_repos }}"
+          after_count="${{ steps.count_after.outputs.total_repos }}"
+          deleted_count="${{ steps.delete_repos.outputs.deleted_count }}"
+          failed_count="${{ steps.delete_repos.outputs.failed_count }}"
+          
+          # Calculate percentages and bar widths
+          if [ "$before_count" -gt 0 ]; then
+            deleted_percent=$((deleted_count * 100 / before_count))
+            remaining_percent=$((after_count * 100 / before_count))
+          else
+            deleted_percent=0
+            remaining_percent=0
+          fi
+          
+          # Create progress bars (max 50 chars wide)
+          deleted_bar_width=$((deleted_count * 50 / (before_count > 0 ? before_count : 1)))
+          remaining_bar_width=$((after_count * 50 / (before_count > 0 ? before_count : 1)))
+          
+          deleted_bar=$(printf '█%.0s' $(seq 1 $deleted_bar_width))
+          remaining_bar=$(printf '█%.0s' $(seq 1 $remaining_bar_width))
+          
+          echo "# 📊 Repository Cleanup Report" > $report_file
           echo "" >> $report_file
           echo "**Date**: $(date)" >> $report_file
-          echo "**Repositories processed**: ${{ steps.read_repos.outputs.count }}" >> $report_file
           echo "" >> $report_file
-          echo "## Repositories" >> $report_file
-          echo '```' >> $report_file
-          echo "${{ steps.read_repos.outputs.repos }}" | tr ' ' '\n' >> $report_file
-          echo '```' >> $report_file
+          
+          echo "## 📈 Dashboard" >> $report_file
+          echo "" >> $report_file
+          echo "\`\`\`" >> $report_file
+          echo "╔═══════════════════════════════════════════════════════════╗" >> $report_file
+          echo "║                    CLEANUP STATISTICS                     ║" >> $report_file
+          echo "╠═══════════════════════════════════════════════════════════╣" >> $report_file
+          printf "║  Before Cleanup    │ %-35s ║\n" "$before_count repos" >> $report_file
+          printf "║  After Cleanup     │ %-35s ║\n" "$after_count repos" >> $report_file
+          printf "║  Deleted           │ %-35s ║\n" "$deleted_count repos" >> $report_file
+          printf "║  Failed            │ %-35s ║\n" "$failed_count repos" >> $report_file
+          echo "╚═══════════════════════════════════════════════════════════╝" >> $report_file
+          echo "" >> $report_file
+          echo "┌─────────────────────── VISUAL BREAKDOWN ───────────────────────┐" >> $report_file
+          echo "│                                                                 │" >> $report_file
+          printf "│  Deleted    [%-50s] %3d%%  │\n" "$deleted_bar" "$deleted_percent" >> $report_file
+          printf "│  Remaining  [%-50s] %3d%%  │\n" "$remaining_bar" "$remaining_percent" >> $report_file
+          echo "│                                                                 │" >> $report_file
+          echo "└─────────────────────────────────────────────────────────────────┘" >> $report_file
+          echo "\`\`\`" >> $report_file
+          echo "" >> $report_file
+          
+          echo "## 📊 Summary" >> $report_file
+          echo "" >> $report_file
+          echo "| Metric | Count | Percentage |" >> $report_file
+          echo "|--------|-------|------------|" >> $report_file
+          echo "| 📦 Total Before | $before_count | 100% |" >> $report_file
+          echo "| ✅ Successfully Deleted | $deleted_count | ${deleted_percent}% |" >> $report_file
+          echo "| ❌ Failed to Delete | $failed_count | - |" >> $report_file
+          echo "| 📦 Total After | $after_count | ${remaining_percent}% |" >> $report_file
+          echo "" >> $report_file
+          
+          if [ "$deleted_count" -gt 0 ]; then
+            echo "## ✅ Successfully Deleted Repositories" >> $report_file
+            echo "" >> $report_file
+            echo '```' >> $report_file
+            echo "${{ steps.delete_repos.outputs.deleted_repos }}" >> $report_file
+            echo '```' >> $report_file
+            echo "" >> $report_file
+          fi
+          
+          if [ "$failed_count" -gt 0 ]; then
+            echo "## ❌ Failed to Delete" >> $report_file
+            echo "" >> $report_file
+            echo '```' >> $report_file
+            echo "${{ steps.delete_repos.outputs.failed_repos }}" >> $report_file
+            echo '```' >> $report_file
+          fi
           
           echo "Report created: $report_file"
+          cat $report_file
       
       - name: Update repos-to-delete.txt
         if: success() && github.event.inputs.dry_run != 'true'
@@ -179,5 +309,5 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add repos-to-delete.txt reports/
-          git diff --quiet && git diff --staged --quiet || git commit -m "Cleanup completed: $(date +%Y-%m-%d)"
+          git diff --quiet && git diff --staged --quiet || git commit -m "Cleanup: Deleted ${{ steps.delete_repos.outputs.deleted_count }} repos | ${{ steps.count_after.outputs.total_repos }} repos remaining [$(date +%Y-%m-%d)]"
           git push
