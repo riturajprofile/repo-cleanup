@@ -30,7 +30,15 @@ jobs:
             exit 1
           fi
           
-          repos=$(grep -v '^#' repos-to-delete.txt | grep -v '^$')
+          repos=$(grep -v '^#' repos-to-delete.txt | grep -v '^$' || true)
+          
+          if [ -z "$repos" ]; then
+            echo "✓ No repositories to delete. The list is empty."
+            echo "count=0" >> $GITHUB_OUTPUT
+            echo "repos=" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
           echo "Repository list:"
           echo "$repos"
           
@@ -46,10 +54,15 @@ jobs:
         run: |
           repo_count=${{ steps.read_repos.outputs.count }}
           
+          if [ "$repo_count" -eq 0 ]; then
+            echo "✓ No repositories to process. Exiting gracefully."
+            exit 0
+          fi
+          
           if [ $repo_count -gt 10 ]; then
             echo "⚠️  WARNING: Attempting to delete $repo_count repositories"
-            echo "This exceeds the safety limit of 10 repos per run"
-            echo "Please review the list and run again with fewer repositories"
+            echo "Safety limit is 10 repositories per run."
+            echo "Please reduce the number of repositories or increase the limit in the workflow."
             exit 1
           fi
           
@@ -57,6 +70,7 @@ jobs:
       
       - name: Verify repositories exist
         id: verify_repos
+        if: steps.read_repos.outputs.count > 0
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           REPOS_TO_DELETE: ${{ steps.read_repos.outputs.repos }}
@@ -102,6 +116,7 @@ jobs:
       
       - name: Get repository count before deletion
         id: count_before
+        if: steps.read_repos.outputs.count > 0
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
@@ -118,6 +133,7 @@ jobs:
       
       - name: Delete repositories
         id: delete_repos
+        if: steps.read_repos.outputs.count > 0
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           REPOS_TO_DELETE: ${{ steps.verify_repos.outputs.existing }}
