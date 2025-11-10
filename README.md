@@ -26,7 +26,10 @@
 - 🔍 **Dry-Run Mode** - Test without actually deleting anything
 - 🛡️ **Safety Limits** - Maximum 10 repositories per run
 - ✅ **Verification** - Checks if repositories exist before deletion
-- 📊 **Detailed Reports** - Logs and reports for every cleanup
+- 📊 **Visual Dashboard Reports** - Beautiful ASCII charts showing deletion statistics
+- 📈 **Repository Count Tracking** - Shows total repos before and after cleanup
+- 📉 **Progress Bars** - Visual representation of deleted vs remaining repos
+- 💬 **Smart Commit Messages** - Auto-generated messages with deletion stats
 - 🔄 **Auto-Clear List** - Empties the deletion list after successful cleanup
 
 ## 🚀 Quick Start
@@ -242,20 +245,54 @@ graph TD
 
 ## 📊 Example Cleanup Report
 
-After each successful cleanup, a report is generated:
+After each successful cleanup, a detailed visual report is generated in the `reports/` folder:
 
 ```markdown
-# Repository Cleanup Report
+# 📊 Repository Cleanup Report
 
-**Date**: 2025-11-10 02:00:00 UTC
-**Repositories processed**: 3
+**Date**: Sun Nov 10 02:00:00 UTC 2025
 
-## Repositories
+## 📈 Dashboard
+
+╔═══════════════════════════════════════════════════════════╗
+║                    CLEANUP STATISTICS                     ║
+╠═══════════════════════════════════════════════════════════╣
+║  Before Cleanup    │ 50 repos                            ║
+║  After Cleanup     │ 45 repos                            ║
+║  Deleted           │ 5 repos                             ║
+║  Failed            │ 0 repos                             ║
+╚═══════════════════════════════════════════════════════════╝
+
+┌─────────────────────── VISUAL BREAKDOWN ───────────────────────┐
+│                                                                 │
+│  Deleted    [█████                                         ]  10%  │
+│  Remaining  [█████████████████████████████████████████████]  90%  │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+## 📊 Summary
+
+| Metric | Count | Percentage |
+|--------|-------|------------|
+| 📦 Total Before | 50 | 100% |
+| ✅ Successfully Deleted | 5 | 10% |
+| ❌ Failed to Delete | 0 | - |
+| 📦 Total After | 45 | 90% |
+
+## ✅ Successfully Deleted Repositories
+
 ```
 riturajprofile/old-project-1
 riturajprofile/test-repo-xyz
 riturajprofile/archived-assignment
+riturajprofile/demo-app-2023
+riturajprofile/temp-testing
 ```
+```
+
+**Commit Message Example:**
+```
+Cleanup: Deleted 5 repos | 45 repos remaining [2025-11-10]
 ```
 
 ## 🤝 Contributing
