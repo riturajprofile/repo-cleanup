@@ -1,3 +1,9 @@
 # Repositories successfully deleted on Mon Nov 10 06:17:08 UTC 2025
 # Add new repositories to delete below (format: username/repo-name)
-
+riturajprofile/longest-streak 
+riturajprofile/container_codespace
+riturajprofile/DevOps-Notes
+riturajprofile/tds-action
+riturajprofile/DevOps-For-Beginners
+riturajprofile/tds-echo
+riturajprofile/email-test
