@@ -6,6 +6,8 @@
 
 <img src="https://github.com/riturajprofile.png" width="150" height="150" alt="Rituraj">
 
+
+
 > **Two powerful ways to manage your GitHub repositories:**
 > 1. **Version Repoma** - Professional web-based repository manager with real-time interface
 > 2. **GitHub Actions** - Automated scheduled cleanup with visual reports
@@ -30,7 +32,7 @@
 - 📝 **Activity Log** - Track every action in real-time
 - 🛡️ **Safety Confirmations** - Type "DELETE" to confirm actions
 - 📈 **Visual Reports** - Beautiful charts and statistics
-
+<img src="https://beeimg.com/images/s92874093423.png" width="700" height="700" alt="Rituraj">
 [**→ Jump to Version Repoma Guide**](#-version-repoma-web-interface)
 
 ### 🤖 GitHub Actions (Automation)
