@@ -767,31 +767,164 @@
             text-align: center;
         }
 
+        /* Sidebar toggle for mobile */
+        #toggleSidebar {
+            display: none;
+            background: transparent;
+            border: 1px solid transparent;
+            font-size: 18px;
+            padding: 6px 8px;
+        }
+
+        /* Close button inside sidebar (mobile) */
+        #closeSidebar {
+            display: none;
+            margin-left: auto;
+        }
+
+        /* Sidebar backdrop for mobile */
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            backdrop-filter: blur(2px);
+        }
+
+        .sidebar-backdrop.show {
+            display: block;
+        }
+
         @media (max-width: 768px) {
+            body {
+                overflow-x: hidden;
+            }
+
+            .container {
+                overflow-x: hidden;
+            }
+
+            #toggleSidebar {
+                display: block;
+                margin-bottom: 10px;
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                z-index: 999;
+                background: linear-gradient(135deg, #5B8FCC 0%, #7BA5D8 100%);
+                color: white;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(91, 143, 204, 0.3);
+                padding: 8px 12px;
+            }
+
+            /* show close button inside sidebar header on mobile */
+            #closeSidebar {
+                display: block;
+                margin-left: auto;
+            }
+
             .main-layout {
                 flex-direction: column;
                 height: auto;
+                min-height: 100vh;
             }
 
             .left-section {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 1001;
                 width: 100%;
-                min-width: unset;
-                height: auto;
+                max-width: 100%;
+                min-width: auto;
+                height: 100vh;
+                background: white;
                 border-right: none;
                 border-bottom: 1px solid #D9EAFD;
+                overflow-y: auto;
+                transition: transform 0.3s ease-in-out;
+                transform: translateX(-100%);
+            }
+
+            .left-section.show {
+                display: flex;
+                transform: translateX(0);
+            }
+
+            .sidebar-header {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                padding: 16px;
+            }
+
+            .sidebar-header h1 {
+                font-size: 16px;
+                flex: 1;
+            }
+
+            .sidebar-header .subtitle {
+                width: 100%;
+                font-size: 11px;
+                margin-top: 4px;
             }
 
             .sidebar-content {
-                padding-bottom: 0; /* Adjust padding for better mobile fit */
+                padding: 16px;
+                padding-bottom: 60px;
+            }
+
+            .sidebar-section {
+                padding: 12px;
+                margin-bottom: 12px;
             }
 
             .right-section {
                 height: auto;
-                overflow-y: unset;
+                min-height: 100vh;
+                overflow-y: visible;
+                overflow-x: hidden;
+                padding-top: 60px;
+            }
+
+            .search-controls {
+                position: static;
+                margin: 0 0 16px 0;
+                border-radius: 12px;
+                border: 1px solid #D9EAFD;
+            }
+
+            .search-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .user-info-compact {
+                width: 100%;
+            }
+
+            .stats-inline {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .stat-inline {
+                flex: 1;
+            }
+
+            .repo-type-badges {
+                justify-content: flex-start;
             }
 
             .repo-grid {
                 grid-template-columns: 1fr;
+                padding: 12px;
             }
 
             .control-buttons {
@@ -800,6 +933,97 @@
 
             .btn {
                 width: 100%;
+            }
+
+            .empty-state {
+                padding: 40px 20px;
+                min-height: calc(100vh - 60px);
+            }
+
+            .empty-icon {
+                font-size: 60px;
+            }
+
+            .empty-title {
+                font-size: 22px;
+            }
+
+            .empty-subtitle {
+                font-size: 14px;
+            }
+
+            .empty-features {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                margin-top: 30px;
+            }
+
+            .how-to-use {
+                max-width: 100%;
+                margin: 30px auto 0;
+            }
+
+            .how-to-title {
+                font-size: 18px;
+            }
+
+            .how-to-steps {
+                padding: 16px;
+            }
+
+            .step-item {
+                gap: 12px;
+            }
+
+            .step-number {
+                min-width: 28px;
+                height: 28px;
+                font-size: 12px;
+            }
+
+            .step-title {
+                font-size: 13px;
+            }
+
+            .step-desc {
+                font-size: 11px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .modal-content {
+                margin: 20px;
+                max-width: calc(100% - 40px);
+                max-height: calc(100vh - 40px);
+            }
+
+            .modal-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 8px;
+            }
+
+            .modal-title {
+                font-size: 18px;
+            }
+
+            .repo-list {
+                max-height: 200px;
+            }
+
+            .developer-info {
+                margin-top: 12px;
+            }
+
+            .dev-links {
+                font-size: 10px;
+            }
+
+            .footer-credit {
+                font-size: 10px;
+                padding: 16px;
             }
         }
 
@@ -1204,12 +1428,19 @@
         </div>
 
         <div class="main-layout" id="mainLayout">
+            <!-- Toggle button for mobile - outside sidebar -->
+            <button id="toggleSidebar" class="btn" aria-label="Open sidebar">☰ Menu</button>
+            
+            <!-- Sidebar backdrop for mobile -->
+            <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+            
             <!-- Left Sidebar - Fixed -->
             <aside class="left-section">
                 <!-- Sidebar Header -->
                 <header class="sidebar-header">
                     <h1>🗑️ Version Repoma</h1>
                     <p class="subtitle">Professional Repository Manager</p>
+                    <button id="closeSidebar" class="btn btn-cancel" aria-label="Close sidebar">✕</button>
                 </header>
 
                 <!-- Sidebar Content - Scrollable -->
@@ -1540,7 +1771,10 @@
             repoList: document.getElementById('repoList'),
             confirmationInput: document.getElementById('confirmationInput'),
             modalCancel: document.getElementById('modalCancel'),
-            modalConfirm: document.getElementById('modalConfirm')
+            modalConfirm: document.getElementById('modalConfirm'),
+            toggleSidebarBtn: document.getElementById('toggleSidebar'),
+            leftSection: document.querySelector('.left-section'),
+            sidebarBackdrop: document.getElementById('sidebarBackdrop')
         };
 
         elements.loadBtn.addEventListener('click', loadRepositories);
@@ -1548,6 +1782,24 @@
         elements.deselectAllBtn.addEventListener('click', deselectAll);
         elements.deleteSelectedBtn.addEventListener('click', showDeleteModal);
         elements.searchInput.addEventListener('input', filterRepos);
+        
+        // Toggle sidebar on mobile
+        elements.toggleSidebarBtn.addEventListener('click', () => {
+            elements.leftSection.classList.toggle('show');
+            elements.sidebarBackdrop.classList.toggle('show');
+        });
+        
+        // Close sidebar button
+        document.getElementById('closeSidebar').addEventListener('click', () => {
+            elements.leftSection.classList.remove('show');
+            elements.sidebarBackdrop.classList.remove('show');
+        });
+        
+        // Close sidebar when clicking backdrop
+        elements.sidebarBackdrop.addEventListener('click', () => {
+            elements.leftSection.classList.remove('show');
+            elements.sidebarBackdrop.classList.remove('show');
+        });
 
         // Modal event listeners
         elements.modalCancel.addEventListener('click', hideDeleteModal);
