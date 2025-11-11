@@ -767,13 +767,29 @@
             text-align: center;
         }
 
-        @media (max-width: 1200px) {
-            .main-layout {
-                grid-template-columns: 1fr;
-            }
-        }
-
         @media (max-width: 768px) {
+            .main-layout {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .left-section {
+                width: 100%;
+                min-width: unset;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid #D9EAFD;
+            }
+
+            .sidebar-content {
+                padding-bottom: 0; /* Adjust padding for better mobile fit */
+            }
+
+            .right-section {
+                height: auto;
+                overflow-y: unset;
+            }
+
             .repo-grid {
                 grid-template-columns: 1fr;
             }
