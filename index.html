@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Rituraj">
     <meta name="description" content="Version Repoma - Professional GitHub Repository Manager by Rituraj">
+    <meta name="keywords" content="github, repository manager, delete repositories, bulk delete, github tools, version repoma, rituraj">
     <title>Version Repoma - GitHub Repository Manager</title>
     <style>
         * {
@@ -1180,7 +1181,7 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <main class="container">
         <div class="loading" id="loading">
             <div class="spinner"></div>
             <p style="color: #94a3b8;">Loading your repositories...</p>
@@ -1188,17 +1189,17 @@
 
         <div class="main-layout" id="mainLayout">
             <!-- Left Sidebar - Fixed -->
-            <div class="left-section">
+            <aside class="left-section">
                 <!-- Sidebar Header -->
-                <div class="sidebar-header">
+                <header class="sidebar-header">
                     <h1>🗑️ Version Repoma</h1>
                     <p class="subtitle">Professional Repository Manager</p>
-                </div>
+                </header>
 
                 <!-- Sidebar Content - Scrollable -->
                 <div class="sidebar-content">
                     <!-- GitHub Repository Manager Form -->
-                    <div class="sidebar-section">
+                    <section class="sidebar-section">
                         <div class="warning" style="margin: 0 0 16px 0;">
                             <strong>⚠️ Warning</strong>
                             Permanent deletion. Cannot be undone.
@@ -1218,18 +1219,18 @@
                         </div>
 
                         <button class="btn btn-primary" id="loadRepos" style="width: 100%;">Load Repositories</button>
-                    </div>
+                    </section>
 
                     <!-- Activity Log - After GitHub Form -->
-                    <div class="sidebar-section" id="logContainer" style="display: none;">
+                    <section class="sidebar-section" id="logContainer" style="display: none;">
                         <h3>📝 Activity Log</h3>
                         <div class="log-box" id="logBox">
                             <div class="log-entry log-info">[System] Ready to process deletions...</div>
                         </div>
-                    </div>
+                    </section>
 
                     <!-- Report Section -->
-                    <div class="sidebar-section" id="reportSection" style="display: none;">
+                    <section class="sidebar-section" id="reportSection" style="display: none;">
                         <h3>📊 Cleanup Report</h3>
                         
                         <div style="color: #9AA6B2; font-size: 10px; margin-bottom: 12px;">
@@ -1265,10 +1266,10 @@
                                 </tr>
                             </table>
                         </div>
-                    </div>
+                    </section>
 
                     <!-- Developer Info Section -->
-                    <div class="sidebar-section" style="padding: 0; background: transparent; border: none;">
+                    <section class="sidebar-section" style="padding: 0; background: transparent; border: none;">
                         <div class="developer-info">
                             <h3>👨‍💻 Developer</h3>
                             <div class="dev-name">Rituraj</div>
@@ -1284,12 +1285,12 @@
                                 Version Repoma v1.0
                             </div>
                         </div>
-                    </div>
+                    </section>
                 </div>
-            </div>
+            </aside>
 
             <!-- Right Section (Main Content) -->
-            <div class="right-section" id="rightSection">
+            <section class="right-section" id="rightSection">
                 <!-- Empty State - Shows before repos are loaded -->
                 <div class="empty-state" id="emptyState">
                     <div class="empty-icon">📦</div>
@@ -1416,7 +1417,7 @@
                             <div class="badge">
                                 📝 Original <span class="badge-count" id="originalCount">0</span>
                             </div>
-                            <div class="badge">
+                            <div classs="badge">
                                 📦 Archived <span class="badge-count" id="archivedCount">0</span>
                             </div>
                             <div class="badge">
@@ -1438,12 +1439,12 @@
                     <div class="repo-grid" id="repoGrid"></div>
                     
                     <!-- Footer Credit -->
-                    <div class="footer-credit">
+                    <footer class="footer-credit">
                         Made with ❤️ by <a href="https://www.riturajprofile.me" target="_blank">Rituraj</a> • 
                         <a href="https://github.com/riturajprofile" target="_blank">@riturajprofile</a>
-                    </div>
+                    </footer>
                 </div>
-            </div>
+            </section>
         </div>
 
         <!-- Delete Confirmation Modal -->
@@ -1474,7 +1475,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <script>
         let token = '';
